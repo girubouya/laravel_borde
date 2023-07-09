@@ -30,6 +30,5 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('posts',PostController::class);
-Route::post('')
 
 require __DIR__.'/auth.php';
