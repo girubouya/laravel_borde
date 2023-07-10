@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\Comment;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,6 +17,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
+
         $loginUser = Auth::user();
         return view('posts.index',compact('posts','loginUser'));
     }
@@ -53,8 +55,10 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $comments = Comment::where('post_id',$post->id)->get();
+        $comments->load('user');
         $loginUser = Auth::user();
-        return view('posts.show',compact('post','loginUser'));
+        return view('posts.show',compact('post','loginUser','comments'));
     }
 
     /**
