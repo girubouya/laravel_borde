@@ -16,7 +16,8 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
-        return view('posts.index',compact('posts'));
+        $loginUser = Auth::user();
+        return view('posts.index',compact('posts','loginUser'));
     }
 
     /**
@@ -52,7 +53,8 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return view('posts.show',compact('post'));
+        $loginUser = Auth::user();
+        return view('posts.show',compact('post','loginUser'));
     }
 
     /**
@@ -60,7 +62,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.edit',compact('post'));
+        $loginUser = Auth::user();
+        return view('posts.edit',compact('post','loginUser'));
     }
 
     /**

@@ -5,21 +5,23 @@
         <a href="{{route('posts.show',$post)}}"><h4 class="card-title">{{$post->title}}</h4></a>
         <p class="card-text">{{$post->content}}</p>
 
-        <div class="d-flex">
-            <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
+        @if ($loginUser['id'] === $post->user_id)
+            <div class="d-flex">
+                <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
 
-            <form action="{{route('posts.destroy',$post)}}" method="POST">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn border">削除</button>
-            </form>
-        </div>
+                <form action="{{route('posts.destroy',$post)}}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn border">削除</button>
+                </form>
+            </div>
+        @endif
     </div>
 </div>
 
 {{-- コメント表示 --}}
 <div>
-
+    
 </div>
 
 <div class="fixed-bottom">

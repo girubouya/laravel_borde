@@ -8,12 +8,16 @@
 
   </head>
 
-    <div class="container">
-        <header class="text-center p-3">
-            <h1 class="fw-bold text-danger">いろいろな掲示板サイト</h1>
+    <body>
+        <header class="p-3  text-end">
+            <p class="fw-bold fs-5">login:{{$loginUser['name']}}</p>
         </header>
-        <body>
-            @yield('content')
-        </body>
-    </div>
+
+        <div class="container">
+            <main>
+                <h1 class="fw-bold text-danger text-center">掲示板サイト</h1>
+                @yield('content')
+            </main>
+        </div>
+    </body>
 </html>
