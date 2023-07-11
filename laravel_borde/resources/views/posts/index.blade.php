@@ -12,10 +12,10 @@
         @csrf
 
         <label class="form-label" for="title">タイトル</label>
-        <input class="form-control" type="text" id="title" name="title">
+        <input class="form-control" type="text" id="title" name="title" value="{{old('title')}}">
 
         <label class="form-label" for="content">内容</label>
-        <textarea class="form-control" name="content" id="content" cols="100" rows="10"></textarea>
+        <textarea class="form-control" name="content" id="content" cols="100" rows="10">{{old('content')}}</textarea>
 
         <input class="btn btn-primary mt-3" type="submit" value="送信">
     </form>
@@ -29,16 +29,18 @@
                     <a href="{{route('posts.show',$post)}}"><h4 class="card-title">{{$post->title}}</h4></a>
                     <p class="card-text">{{$post->content}}</p>
 
-                    @if ($loginUser['id'] === $post->user_id)
-                        <div class="d-flex">
-                            <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
+                    @if (isset($loginUser))
+                        @if ($loginUser['id'] === $post->user_id)
+                            <div class="d-flex">
+                                <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
 
-                            <form action="{{route('posts.destroy',$post)}}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn border">削除</button>
-                            </form>
-                        </div>
+                                <form action="{{route('posts.destroy',$post)}}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn border">削除</button>
+                                </form>
+                            </div>
+                        @endif
                     @endif
 
                 </div>

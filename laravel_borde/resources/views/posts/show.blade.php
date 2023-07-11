@@ -1,4 +1,7 @@
 @extends('layouts.posts.app')
+
+@include('components.posts.alert')
+
 @section('content')
 
 <a href="{{route('posts.index')}}">戻る</a>
@@ -7,37 +10,41 @@
         <h4 class="card-title">{{$post->title}}</h4>
         <p class="card-text">{{$post->content}}</p>
 
-        @if ($loginUser['id'] === $post->user_id)
-            <div class="d-flex">
-                <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
+        @if (isset($loginUser))
+            @if ($loginUser['id'] === $post->user_id)
+                <div class="d-flex">
+                    <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
 
-                <form action="{{route('posts.destroy',$post)}}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn border">削除</button>
-                </form>
-            </div>
+                    <form action="{{route('posts.destroy',$post)}}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn border">削除</button>
+                    </form>
+                </div>
+            @endif
         @endif
     </div>
 </div>
 
 {{-- コメント表示 --}}
 @if (isset($comments))
-
 @foreach ($comments as $comment)
+
     <div class="card mb-3">
         <div class="card-body">
             <p class="card-text fs-5">{{$comment->comment}} <span class="fs-6 text-purple-300">by:{{$comment->user->name}}</span></p>
-            @if ($loginUser['id'] === $comment->user_id)
-                <div class="d-flex">
-                    <a href="{{route('comment.edit',$comment->id)}}" class="btn border me-2">編集</a>
+            @if (isset($loginUser))
+                @if ($loginUser['id'] === $comment->user_id)
+                    <div class="d-flex">
+                        <a href="{{route('comment.edit',['comment_id'=>$comment->id])}}" class="btn border me-2">編集</a>
 
-                    <form action="{{route('comment.destroy',$comment->id)}}" method="POST">
-                        @csrf
-                        <input type="hidden" name="post_id" value="{{$post->id}}">
-                        <button type="submit" class="btn border">削除</button>
-                    </form>
-                </div>
+                        <form action="{{route('comment.destroy',['comment_id'=>$comment->id])}}" method="POST">
+                            @csrf
+                            <input type="hidden" name="post_id" value="{{$post->id}}">
+                            <button type="submit" class="btn border">削除</button>
+                        </form>
+                    </div>
+                @endif
             @endif
 
         </div>

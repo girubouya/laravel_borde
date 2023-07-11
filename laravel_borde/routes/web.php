@@ -16,7 +16,7 @@ use App\Http\Controllers\CommentController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('posts.index');
 });
 
 Route::get('/dashboard', function () {
@@ -32,8 +32,8 @@ Route::middleware('auth')->group(function () {
 Route::resource('posts',PostController::class);
 Route::get('comment',[CommentController::class,'index'])->name('comment.index');
 Route::post('comment',[CommentController::class,'store'])->name('comment.store');
-Route::get('comment/edit/{id}',[CommentController::class,'edit'])->name('comment.edit');
-Route::post('comment/edit/{id}',[CommentController::class,'update'])->name('comment.update');
-Route::post('comment/{id}',[CommentController::class,'delete'])->name('comment.destroy');
+Route::get('comment/edit',[CommentController::class,'edit'])->name('comment.edit');
+Route::post('comment/edit',[CommentController::class,'update'])->name('comment.update');
+Route::post('comment/delete',[CommentController::class,'delete'])->name('comment.destroy');
 
 require __DIR__.'/auth.php';

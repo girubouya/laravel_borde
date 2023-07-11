@@ -16,10 +16,10 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = Post::orderBy('id','desc')->get(); //データを取ってくる
 
-        $loginUser = Auth::user();
-        return view('posts.index',compact('posts','loginUser'));
+        $loginUser = Auth::user();  //ログインしているユーザー
+        return view('posts.index',compact('posts','loginUser'));    //index.blade.phpを表示
     }
 
     /**
@@ -35,19 +35,27 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        $id = Auth::id();
+        //もしログインしていないユーザーが送信ボタンを押した場合
+        if(Auth::user() === null){
+            $message = 'ログインすれば掲示板に送信できます!';
+            return redirect()->route('posts.index')->with(compact('message'));
+        }else{
+            $id = Auth::id();   //ログインしているユーザーのID
+            //入力した値を連想配列に入れる
+            $posts = [
+                'user_id'=>$id,
+                'title'=>$request->title,
+                'content'=>$request->content,
+            ];
 
-        $posts = [
-            'user_id'=>$id,
-            'title'=>$request->title,
-            'content'=>$request->content,
-        ];
+            $post = new Post;   //Postのインスタンス
+            $post->fill($posts)->save();    //連想配列のデータをDBに入れる
+            $message = '送信できました！';
 
-        $post = new Post;
-        $post->fill($posts)->save();
-        $message = '送信できました！';
+            return redirect('/posts')->with(compact('message'));
+        }
 
-        return redirect('/posts')->with(compact('message'));
+
     }
 
     /**
@@ -55,8 +63,8 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $comments = Comment::where('post_id',$post->id)->get();
-        $comments->load('user');
+        $comments = Comment::where('post_id',$post->id)->get(); //選択されたPostのidでDBに検索をかけデータを取る
+        $comments->load('user');    //リレーション(loadするとdd()で確認する時に表示される)
         $loginUser = Auth::user();
         return view('posts.show',compact('post','loginUser','comments'));
     }
