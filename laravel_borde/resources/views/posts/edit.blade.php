@@ -14,4 +14,5 @@
 
         <input class="btn btn-primary mt-3" type="submit" value="送信">
     </form>
+   
 @endsection

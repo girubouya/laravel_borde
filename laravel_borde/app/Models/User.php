@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Post;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
 
     /**
      * The attributes that are mass assignable.
@@ -42,4 +44,30 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    //多対多リレーション
+    public function likes(){
+        return $this->belongsToMany(Post::class,'likes','user_id','post_id')->withTimestamps();
+    }
+    //この投稿に対して既にいいねしてるかを判別する
+    public function isLike($postId){
+        return $this->likes()->where('post_id',$postId)->exists();
+    }
+    //良いねしてなければ良いねする
+    public function like($postId){
+        if($this->isLike($postId)){
+            //いいねしていれば何もしない
+        }else{
+            $this->likes()->attach($postId);
+        }
+    }
+    //良いねしてたら外す
+    public function unlike($postId){
+        if($this->isLike($postId)){
+            $this->likes()->detach($postId);
+        }else{
+
+        }
+    }
+
 }

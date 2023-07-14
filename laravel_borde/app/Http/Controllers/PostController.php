@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Like;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class PostController extends Controller
 {
@@ -17,8 +19,9 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::orderBy('id','desc')->get(); //データを取ってくる
-
         $loginUser = Auth::user();  //ログインしているユーザー
+
+        $userId = Auth::id();
         return view('posts.index',compact('posts','loginUser'));    //index.blade.phpを表示
     }
 
@@ -54,8 +57,6 @@ class PostController extends Controller
 
             return redirect('/posts')->with(compact('message'));
         }
-
-
     }
 
     /**
@@ -66,7 +67,13 @@ class PostController extends Controller
         $comments = Comment::where('post_id',$post->id)->get(); //選択されたPostのidでDBに検索をかけデータを取る
         $comments->load('user');    //リレーション(loadするとdd()で確認する時に表示される)
         $loginUser = Auth::user();
-        return view('posts.show',compact('post','loginUser','comments'));
+
+        //ログインユーザーが選択されている投稿に良いねしたか調べる
+        $goodCheck = $loginUser->isLike($post->id);
+        //良いねしている総数を取得
+        $goodCount = Like::where('post_id',$post->id)->count();
+
+        return view('posts.show',compact('post','loginUser','comments','goodCheck','goodCount'));
     }
 
     /**

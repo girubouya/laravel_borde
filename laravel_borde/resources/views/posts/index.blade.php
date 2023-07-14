@@ -23,6 +23,7 @@
     {{-- 一覧表示 --}}
     <h2 class="mt-5 fw-bold text-center">投稿内容</h2>
     @if (isset($posts))
+
         @foreach ($posts as $post)
             <div class="card mb-3">
                 <div class="card-body">
@@ -41,6 +42,15 @@
                                 </form>
                             </div>
                         @endif
+                        {{-- @if ($user->isLike($post->id))
+                            <a href="{{route('like.destroy',['post_id'=>$post->id])}}">
+                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"  style="color: #ff0000;"></i>
+                            </a>
+                        @else
+                            <a href="{{route('like.store',['post_id'=>$post->id])}}">
+                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"  style="color: #000000;"></i>
+                            </a>
+                        @endif --}}
                     @endif
 
                 </div>

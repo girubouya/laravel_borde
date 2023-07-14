@@ -1,4 +1,7 @@
 @extends('layouts.posts.app')
+@section('javascript')
+    <script src="{{asset('js/main.js')}}"></script>
+@endsection
 
 @include('components.posts.alert')
 
@@ -24,6 +27,19 @@
             @endif
         @endif
     </div>
+
+    {{-- 良いね処理(true=押されている/false=押されていない --}}
+    @if ($goodCheck)
+        <a href="" id="goodBtn" data-post_id="{{$post->id}}" class="check" style="color: #ff0000; text-decoration:none">
+            <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"></i>
+            <span id="goodCount" style="color: #000000">*{{$goodCount}}</span>
+        </a>
+    @else
+        <a href="" id="goodBtn" data-post_id="{{$post->id}}" style="color: #000000; text-decoration:none">
+            <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"></i>
+            <span id="goodCount" style="color: #000000">*{{$goodCount}}</span>
+        </a>
+    @endif
 </div>
 
 {{-- コメント表示 --}}
@@ -46,7 +62,6 @@
                     </div>
                 @endif
             @endif
-
         </div>
     </div>
 @endforeach
