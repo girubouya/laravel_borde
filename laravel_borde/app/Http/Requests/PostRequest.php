@@ -19,6 +19,7 @@ class PostRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
+    //検査するルール
     public function rules(): array
     {
         return [
@@ -27,6 +28,7 @@ class PostRequest extends FormRequest
         ];
     }
 
+    //属性
     public function attributes(){
         return [
             'title'=>'タイトル',
@@ -34,6 +36,7 @@ class PostRequest extends FormRequest
         ];
     }
 
+    //エラーの場合のメッセージ
     public function messages(){
         return [
             'title.required'=>':attributeを入力してください',

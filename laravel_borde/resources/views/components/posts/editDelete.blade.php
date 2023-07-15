@@ -1,3 +1,4 @@
+{{-- それぞれの編集と削除フォーム --}}
 <div class="d-flex">
     <a href="{{$routeEdit}}" class="btn border me-2">編集</a>
 

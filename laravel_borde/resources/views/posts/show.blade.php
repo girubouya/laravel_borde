@@ -7,7 +7,10 @@
 
 @section('content')
 
+{{-- 戻る処理 --}}
 <a href="{{route('posts.index')}}">戻る</a>
+
+{{-- 選択された投稿表示 --}}
 <div class="card mb-3">
     <div class="card-body">
         <h4 class="card-title">{{$post->title}}
@@ -17,15 +20,8 @@
 
         @if (isset($loginUser))
             @if ($loginUser['id'] === $post->user_id)
-                <div class="d-flex">
-                    <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
+            @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post)])
 
-                    <form action="{{route('posts.destroy',$post)}}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn border">削除</button>
-                    </form>
-                </div>
             @endif
         @endif
     </div>
@@ -37,7 +33,7 @@
     @endif
 </div>
 
-{{-- コメント表示 --}}
+{{-- コメント一覧表示 --}}
 @if (isset($comments))
 @foreach ($comments as $comment)
 <div class="row">
@@ -47,11 +43,13 @@
                 <p class="card-text fs-5">{{$comment->comment}} <span class="fs-6 text-purple-300">by:{{$comment->user->name}}</span></p>
                 @if (isset($loginUser))
                     @if ($loginUser['id'] === $comment->user_id)
+                    {{-- @include('components.posts.editDelete',['routeEdit'=>route('comment.edit',['comment_id'=>$comment->id]),'routeDelete'=>route('comment.destroy',['comment_id'=>$comment->id])]) --}}
                         <div class="d-flex">
                             <a href="{{route('comment.edit',['comment_id'=>$comment->id])}}" class="btn border me-2">編集</a>
 
-                            <form action="{{route('comment.destroy',['comment_id'=>$comment->id])}}" method="POST">
+                            <form action="{{route('comment.destroy')}}" method="POST">
                                 @csrf
+                                <input type="hidden" name="comment_id" value="{{$comment->id}}">
                                 <input type="hidden" name="post_id" value="{{$post->id}}">
                                 <button type="submit" class="btn border">削除</button>
                             </form>
@@ -73,6 +71,7 @@
 @endforeach
 @endif
 
+{{-- コメント投稿フォーム --}}
 <div class="fixed-bottom">
     <div class="container">
         @include('components.posts.error',['title'=>'comment','message'=>'comment'])

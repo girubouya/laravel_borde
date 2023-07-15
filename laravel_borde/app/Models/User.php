@@ -75,9 +75,11 @@ class User extends Authenticatable
     public function commentLikes(){
         return $this->belongsToMany(Comment::class,'likes','user_id','comment_id')->withTimestamps();
     }
+    //この投稿に対して既にいいねしてるかを判別する
     public function isLikeComment($commentId){
         return $this->commentLikes()->where('comment_id',$commentId)->exists();
     }
+    //良いねしてなければ良いねする
     public function LikeComment($commentId){
         if($this->isLikeComment($commentId)){
 
@@ -85,6 +87,7 @@ class User extends Authenticatable
             $this->commentLikes()->attach($commentId);
         }
     }
+    //良いねしてたら外す
     public function unLikeComment($commentId){
         if($this->isLikeComment($commentId)){
             $this->commentLikes()->detach($commentId);

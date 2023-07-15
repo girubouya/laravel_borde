@@ -19,10 +19,12 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $loginUser = Auth::user();  //ログインしているユーザー
-        $paginate = '';
+        $paginate = ''; //何を基準でページネーションするかの変数
 
+        //検索キーワードが無ければ全てのデータ取得
         if(empty(session('keyword'))){
             $posts = Post::orderBy('id','desc')->paginate(3); //データを取ってくる
+            //名前で検索する
             if(isset($request->name)){
                 $posts = Post::where('user_id',$request->name)->paginate(3);
                 $paginate = 'name';
@@ -30,6 +32,7 @@ class PostController extends Controller
         }else{
             $keyword = session('keyword');
             $posts = Post::where('title','LIKE',"%{$keyword}%")->paginate(3);
+            //検索キーワードがありかつ、名前で検索したデータ取得
             if(isset($request->name)){
                 $posts = Post::where('user_id',$request->name)->where('title','LIKE',"%{$keyword}%")->paginate(3);
                 $paginate = 'name';
@@ -57,7 +60,8 @@ class PostController extends Controller
             $message = 'ログインすれば掲示板に送信できます!';
             return redirect()->route('posts.index')->with(compact('message'));
         }else{
-            $id = Auth::id();   //ログインしているユーザーのID
+            //ログインしているユーザーのID
+            $id = Auth::id();
             //入力した値を連想配列に入れる
             $posts = [
                 'user_id'=>$id,
@@ -65,8 +69,10 @@ class PostController extends Controller
                 'content'=>$request->content,
             ];
 
-            $post = new Post;   //Postのインスタンス
-            $post->fill($posts)->save();    //連想配列のデータをDBに入れる
+            //Postのインスタンス
+            $post = new Post;
+            //連想配列のデータをDBに入れる
+            $post->fill($posts)->save();
             $message = '送信できました！';
 
             return redirect()->route('posts.index')->with(compact('message'));
@@ -78,7 +84,9 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $comments = Comment::where('post_id',$post->id)->get(); //選択されたPostのidでDBに検索をかけデータを取る
+        //選択されたPostのidでDBに検索をかけデータを取る
+        $comments = Comment::where('post_id',$post->id)->get();
+        //user情報取得
         $loginUser = Auth::user();
 
         //ログインユーザーが選択されている投稿に良いねしたか調べる
@@ -94,6 +102,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        //user情報取得
         $loginUser = Auth::user();
         return view('posts.edit',compact('post','loginUser'));
     }
@@ -103,6 +112,7 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        //DBに入力されたデータを更新する
         $post->update([
             'title'=>$request->title,
             'content'=>$request->content
@@ -116,25 +126,32 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        //データ削除
         $post->delete();
         $message="削除完了";
         return redirect()->route('posts.index')->with(compact('message'));
     }
 
+    //検索処理
     public function search(Request $request){
+        //検索キーワード取得
         $keyword = $request->search;
+        // セッションに保存
         session(['keyword'=>$keyword]);
-
+        //ページネーションをsearchにする
         $paginate='search';
 
+        // キーワードに何も入力されていなかったら
         if($keyword === null){
-            //何も検索されていなかったらすべて取得
+            //セッション削除
             session()->forget('keyword');
+            // 全てのデータ取得
             $posts = Post::paginate(3);
             $message = '';
         }else{
             //検索された単語をDBから取得
             $posts = Post::where('title','LIKE',"%{$keyword}%")->paginate(3);
+            // もしDBにデータが無かったら０/あれば件数取得
             if(empty($posts)){
                 $message = '検索結果は0件です';
             }else{

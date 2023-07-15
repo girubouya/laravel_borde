@@ -12,7 +12,7 @@
     {{-- 送信が出来たらメッセージ表示    --}}
     @include('components.posts.alert')
 
-    {{-- 入力場所 --}}
+    {{-- 新規投稿入力場所 --}}
     <form action="{{route('posts.index')}}" method="POST" style="margin-bottom: 100px">
         @csrf
 
@@ -25,7 +25,7 @@
         <input class="btn btn-primary mt-3" type="submit" value="送信">
     </form>
 
-    {{-- 検索場所 --}}
+    {{-- 検索数メッセージ --}}
     @if (isset($message))
         {{$message}}
     @endif
@@ -34,7 +34,7 @@
             <h2 class="fw-bold text-center">投稿内容</h2>
         </div>
         <div class="col-3">
-            {{-- 検索処理 --}}
+            {{-- 検索フォーム --}}
             <form action="/posts/search" method="GET">
                 <div class="input-group">
                     <input type="text" class="form-control" name="search" placeholder="キーワードを入力">
@@ -42,6 +42,7 @@
                 </div>
             </form>
         </div>
+        {{-- ページネーション --}}
         @if ($paginate === '')
             <div class="col-3">
                 {{$posts->links('pagination::bootstrap-5')}}
@@ -59,7 +60,7 @@
         @endif
     </div>
 
-    {{-- 一覧表示 --}}
+    {{-- 投稿一覧表示 --}}
     @if (isset($posts))
         @foreach ($posts as $post)
             <div class="card mb-3">
