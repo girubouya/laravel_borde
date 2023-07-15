@@ -5,6 +5,7 @@
 
 
 @section('content')
+
     {{-- エラー表示 --}}
     @include('components.posts.error',['title'=>'title','message'=>'title'])
     @include('components.posts.error',['title'=>'content','message'=>'content'])
@@ -12,7 +13,7 @@
     @include('components.posts.alert')
 
     {{-- 入力場所 --}}
-    <form action="/posts" method="POST">
+    <form action="{{route('posts.index')}}" method="POST" style="margin-bottom: 100px">
         @csrf
 
         <label class="form-label" for="title">タイトル</label>
@@ -24,10 +25,26 @@
         <input class="btn btn-primary mt-3" type="submit" value="送信">
     </form>
 
+    {{-- 検索場所 --}}
+    @if (isset($message))
+        {{$message}}
+    @endif
+    <div class="row align-items-center mb-5">
+        <div class="col-9">
+            <h2 class="fw-bold text-center">投稿内容</h2>
+        </div>
+        <div class="col-3">
+            <form action="{{route('posts.search')}}" method="POST">
+                @csrf
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="キーワードを入力">
+                    <button class="btn btn-outline-success" type="submit" id="searchBtn"><i class="fas fa-search"></i> 検索</button>
+                </div>
+            </form>
+        </div>
+    </div>
     {{-- 一覧表示 --}}
-    <h2 class="mt-5 fw-bold text-center">投稿内容</h2>
     @if (isset($posts))
-
         @foreach ($posts as $post)
             <div class="card mb-3">
                 <div class="card-body">

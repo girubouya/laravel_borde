@@ -18,8 +18,14 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy('id','desc')->get(); //データを取ってくる
         $loginUser = Auth::user();  //ログインしているユーザー
+
+        if(empty(session('keyword'))){
+            $posts = Post::orderBy('id','desc')->get(); //データを取ってくる
+        }else{
+            $keyword = session('keyword');
+            $posts = Post::where('title','LIKE',"%{$keyword}%")->get();
+        }
 
         return view('posts.index',compact('posts','loginUser'));    //index.blade.phpを表示
     }
@@ -51,10 +57,10 @@ class PostController extends Controller
             ];
 
             $post = new Post;   //Postのインスタンス
-            $post->fill($posts)->save();    //連想配列のデータをDBに入れる
+            // $post->fill($posts)->save();    //連想配列のデータをDBに入れる
             $message = '送信できました！';
 
-            return redirect('/posts')->with(compact('message'));
+            return redirect()->route('posts.index')->with(compact('message'));
         }
     }
 
@@ -104,5 +110,28 @@ class PostController extends Controller
         $post->delete();
         $message="削除完了";
         return redirect()->route('posts.index')->with(compact('message'));
+    }
+
+    public function search(Request $request){
+        $keyword = $request->search;
+        session(['keyword'=>$keyword]);
+
+        if($keyword === null){
+            //何も検索されていなかったらすべて取得
+            $posts = Post::all();
+            $message = '';
+        }else{
+            //検索された単語をDBから取得
+            $posts = Post::where('title','LIKE',"%{$keyword}%")->get();
+            if(empty($posts)){
+                $message = '検索結果は0件です';
+            }else{
+                $searchCount = count($posts);
+                $message = "検索結果は{$searchCount}件です";
+            }
+        }
+
+        $loginUser = Auth::user();
+        return view('posts.index',compact('posts','loginUser','message'));
     }
 }
