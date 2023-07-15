@@ -30,7 +30,7 @@
         {{$message}}
     @endif
     <div class="row align-items-center mb-5">
-        <div class="col-9">
+        <div class="col-5">
             <h2 class="fw-bold text-center">投稿内容</h2>
         </div>
         <div class="col-3">
@@ -41,6 +41,9 @@
                     <button class="btn btn-outline-success" type="submit" id="searchBtn"><i class="fas fa-search"></i> 検索</button>
                 </div>
             </form>
+        </div>
+        <div class="col-3">
+            {{$posts->links('pagination::bootstrap-5')}}
         </div>
     </div>
     {{-- 一覧表示 --}}

@@ -21,7 +21,7 @@ class PostController extends Controller
         $loginUser = Auth::user();  //ログインしているユーザー
 
         if(empty(session('keyword'))){
-            $posts = Post::orderBy('id','desc')->get(); //データを取ってくる
+            $posts = Post::orderBy('id','desc')->paginate(4); //データを取ってくる
         }else{
             $keyword = session('keyword');
             $posts = Post::where('title','LIKE',"%{$keyword}%")->get();
@@ -57,7 +57,7 @@ class PostController extends Controller
             ];
 
             $post = new Post;   //Postのインスタンス
-            // $post->fill($posts)->save();    //連想配列のデータをDBに入れる
+            $post->fill($posts)->save();    //連想配列のデータをDBに入れる
             $message = '送信できました！';
 
             return redirect()->route('posts.index')->with(compact('message'));
