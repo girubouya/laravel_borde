@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Post;
+use App\Models\Comment;
 
 class User extends Authenticatable
 {
@@ -45,7 +46,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    //多対多リレーション
+    //多対多リレーション(user_idとpost_id)
     public function likes(){
         return $this->belongsToMany(Post::class,'likes','user_id','post_id')->withTimestamps();
     }
@@ -65,6 +66,28 @@ class User extends Authenticatable
     public function unlike($postId){
         if($this->isLike($postId)){
             $this->likes()->detach($postId);
+        }else{
+
+        }
+    }
+
+    //多対多リレーション(user_idとcomment_id)
+    public function commentLikes(){
+        return $this->belongsToMany(Comment::class,'likes','user_id','comment_id')->withTimestamps();
+    }
+    public function isLikeComment($commentId){
+        return $this->commentLikes()->where('comment_id',$commentId)->exists();
+    }
+    public function LikeComment($commentId){
+        if($this->isLikeComment($commentId)){
+
+        }else{
+            $this->commentLikes()->attach($commentId);
+        }
+    }
+    public function unLikeComment($commentId){
+        if($this->isLikeComment($commentId)){
+            $this->commentLikes()->detach($commentId);
         }else{
 
         }

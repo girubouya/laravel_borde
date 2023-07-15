@@ -1,4 +1,8 @@
 @extends('layouts.posts.app')
+@section('javascript')
+    <script src="{{asset('js/posts.js')}}"></script>
+@endsection
+
 
 @section('content')
     {{-- エラー表示 --}}
@@ -42,15 +46,18 @@
                                 </form>
                             </div>
                         @endif
-                        {{-- @if ($user->isLike($post->id))
-                            <a href="{{route('like.destroy',['post_id'=>$post->id])}}">
-                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"  style="color: #ff0000;"></i>
+                        {{-- 良いね処理(true=押されている/false=押されていない --}}
+                        @if ($loginUser->isLike($post->id))
+                            <a href="" class="goodBtn" data-post_id="{{$post->id}}" class="check" style="color: #ff0000; text-decoration:none">
+                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"></i>
+                                <span id="goodCount" style="color: #000000">*{{count($post->likes)}}</span>
                             </a>
                         @else
-                            <a href="{{route('like.store',['post_id'=>$post->id])}}">
-                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"  style="color: #000000;"></i>
+                            <a href="" class="goodBtn" data-post_id="{{$post->id}}" style="color: #000000; text-decoration:none">
+                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"></i>
+                                <span id="goodCount" style="color: #000000">*{{count($post->likes)}}</span>
                             </a>
-                        @endif --}}
+                        @endif
                     @endif
 
                 </div>

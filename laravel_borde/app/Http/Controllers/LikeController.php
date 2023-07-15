@@ -21,11 +21,31 @@ class LikeController extends Controller
         return response()->json($param);
     }
 
+    public function storeComment($commentId){
+        Auth::user()->LikeComment($commentId);
+        $goodCount = Like::where('comment_id',$commentId)->count();
+        $param = [
+            'goodCount'=>$goodCount,
+        ];
+
+        return response()->json($param);
+    }
+
     public function destory($postId){
         Auth::user()->unlike($postId);
         $goodCount = Like::where('post_id',$postId)->count();
         $param = [
             'goodCount' =>$goodCount
+        ];
+
+        return response()->json($param);
+    }
+
+    public function destroyComment($commentId){
+        Auth::user()->unLikeComment($commentId);
+        $goodCount = Like::where('comment_id',$commentId)->count();
+        $param = [
+            'goodCount'=>$goodCount,
         ];
 
         return response()->json($param);

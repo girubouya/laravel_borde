@@ -1,6 +1,7 @@
 @extends('layouts.posts.app')
 @section('javascript')
     <script src="{{asset('js/main.js')}}"></script>
+    <script src="{{asset('js/comment.js')}}"></script>
 @endsection
 
 @include('components.posts.alert')
@@ -45,7 +46,6 @@
 {{-- コメント表示 --}}
 @if (isset($comments))
 @foreach ($comments as $comment)
-
     <div class="card mb-3">
         <div class="card-body">
             <p class="card-text fs-5">{{$comment->comment}} <span class="fs-6 text-purple-300">by:{{$comment->user->name}}</span></p>
@@ -61,6 +61,20 @@
                         </form>
                     </div>
                 @endif
+
+                {{-- 良いね処理 --}}
+                @if ($loginUser->isLikeComment($comment->id))
+                    <a href="" class="goodBtn check" data-comment_id="{{$comment->id}}" style="color: #ff0000; text-decoration:none">
+                        <i class="fa-solid fa-fish fa-2x good_icon"></i>
+                        <span style="color: #000000">*{{count($comment->likes)}}</span>
+                    </a>
+                @else
+                    <a href="" class="goodBtn" data-comment_id="{{$comment->id}}" style="color: #000000; text-decoration:none">
+                        <i class="fa-solid fa-fish fa-2x good_icon"></i>
+                        <span style="color: #000000">*{{count($comment->likes)}}</span>
+                    </a>
+                @endif
+
             @endif
         </div>
     </div>

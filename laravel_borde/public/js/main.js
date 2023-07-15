@@ -49,24 +49,5 @@ window.addEventListener('load',function(){
             }
         })
 
-    // //良いねされている場合
-    // if(document.querySelector('#goodDeleteBtn')){
-    //     const goodDeleteBtn = document.querySelector('#goodDeleteBtn');
-    //     goodDeleteBtn.style.color="#ff0000";
 
-    //     goodDeleteBtn.addEventListener('click',(e)=>{
-    //         e.preventDefault();
-    //         goodDeleteBtn.style.color="#000000";
-    //         const postId = goodDeleteBtn.dataset.post_id;
-    //         fetch(`/unlike/${postId}`,{
-    //             method:'POST',
-    //             headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content}, // CSRFトークン対策
-    //         }).then(res=>{
-
-    //         })
-    //         .catch(error=>{
-    //             console.log(error);
-    //         });
-    //     });
-    // }
 })

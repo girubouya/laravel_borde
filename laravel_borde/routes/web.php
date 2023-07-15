@@ -38,7 +38,9 @@ Route::get('comment/edit',[CommentController::class,'edit'])->name('comment.edit
 Route::post('comment/edit',[CommentController::class,'update'])->name('comment.update');
 Route::post('comment/delete',[CommentController::class,'delete'])->name('comment.destroy');
 
-Route::post('like/{postId}',[LikeController::class,'store']);
+Route::post('/like/{postId}',[LikeController::class,'store']);
+Route::post('/like/comment/{commentId}',[LikeController::class,'storeComment']);
 Route::post('/unlike/{postId}',[LikeController::class,'destory']);
+Route::post('/unlike/comment/{commentId}',[LikeController::class,'destroyComment']);
 
 require __DIR__.'/auth.php';

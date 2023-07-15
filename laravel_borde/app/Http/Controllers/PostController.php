@@ -21,7 +21,7 @@ class PostController extends Controller
         $posts = Post::orderBy('id','desc')->get(); //データを取ってくる
         $loginUser = Auth::user();  //ログインしているユーザー
 
-        $userId = Auth::id();
+        $posts->load('likes');
         return view('posts.index',compact('posts','loginUser'));    //index.blade.phpを表示
     }
 
