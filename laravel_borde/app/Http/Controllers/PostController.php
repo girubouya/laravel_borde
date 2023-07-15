@@ -21,7 +21,6 @@ class PostController extends Controller
         $posts = Post::orderBy('id','desc')->get(); //データを取ってくる
         $loginUser = Auth::user();  //ログインしているユーザー
 
-        $posts->load('likes');
         return view('posts.index',compact('posts','loginUser'));    //index.blade.phpを表示
     }
 
@@ -65,7 +64,6 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $comments = Comment::where('post_id',$post->id)->get(); //選択されたPostのidでDBに検索をかけデータを取る
-        $comments->load('user');    //リレーション(loadするとdd()で確認する時に表示される)
         $loginUser = Auth::user();
 
         //ログインユーザーが選択されている投稿に良いねしたか調べる

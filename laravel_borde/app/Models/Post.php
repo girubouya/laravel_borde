@@ -26,4 +26,8 @@ class Post extends Model
         return $this->hasMany(Like::class,'post_id','id');
     }
 
+    public function user(){
+        return $this->belongsTo(User::class,'user_id');
+    }
+
 }

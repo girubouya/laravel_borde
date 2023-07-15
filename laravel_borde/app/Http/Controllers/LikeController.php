@@ -11,43 +11,34 @@ class LikeController extends Controller
 {
 
     public function store($postId, Request $request){
-        Auth::user()->like($postId);
-        $goodCount = Like::where('post_id',$postId)->count();
-        $param = [
-            'goodCount' =>$goodCount,
-            'dog'=>$request->dog,
-        ];
+        if($request->option === 'post'){
+            Auth::user()->like($postId);
+            $goodCount = Like::where('post_id',$postId)->count();
+        }
+        if($request->option === 'comment'){
+            Auth::user()->LikeComment($postId);
+            $goodCount = Like::where('comment_id',$postId)->count();
+        }
 
-        return response()->json($param);
-    }
-
-    public function storeComment($commentId){
-        Auth::user()->LikeComment($commentId);
-        $goodCount = Like::where('comment_id',$commentId)->count();
         $param = [
             'goodCount'=>$goodCount,
         ];
-
         return response()->json($param);
     }
 
-    public function destory($postId){
-        Auth::user()->unlike($postId);
-        $goodCount = Like::where('post_id',$postId)->count();
-        $param = [
-            'goodCount' =>$goodCount
-        ];
+    public function destory($postId, Request $request){
+        if($request->option==='post'){
+            Auth::user()->unlike($postId);
+            $goodCount = Like::where('post_id',$postId)->count();
+        }
+        if($request->option === 'comment'){
+            Auth::user()->unLikeComment($postId);
+            $goodCount = Like::where('comment_id',$postId)->count();
+        }
 
-        return response()->json($param);
-    }
-
-    public function destroyComment($commentId){
-        Auth::user()->unLikeComment($commentId);
-        $goodCount = Like::where('comment_id',$commentId)->count();
         $param = [
             'goodCount'=>$goodCount,
         ];
-
         return response()->json($param);
     }
 }

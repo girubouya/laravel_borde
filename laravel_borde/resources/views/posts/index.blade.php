@@ -31,32 +31,22 @@
         @foreach ($posts as $post)
             <div class="card mb-3">
                 <div class="card-body">
-                    <a href="{{route('posts.show',$post)}}"><h4 class="card-title">{{$post->title}}</h4></a>
+                    <a href="{{route('posts.show',$post)}}" style="text-decoration: none">
+                        <h4 class="card-title">{{$post->title}}
+                            <span class="fs-6" style="color: #000000">by:{{$post->user->name}}</span>
+                        </h4>
+                    </a>
                     <p class="card-text">{{$post->content}}</p>
 
                     @if (isset($loginUser))
                         @if ($loginUser['id'] === $post->user_id)
-                            <div class="d-flex">
-                                <a href="{{route('posts.edit',$post)}}" class="btn border me-2">編集</a>
-
-                                <form action="{{route('posts.destroy',$post)}}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn border">削除</button>
-                                </form>
-                            </div>
+                            @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post)])
                         @endif
                         {{-- 良いね処理(true=押されている/false=押されていない --}}
                         @if ($loginUser->isLike($post->id))
-                            <a href="" class="goodBtn" data-post_id="{{$post->id}}" class="check" style="color: #ff0000; text-decoration:none">
-                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"></i>
-                                <span id="goodCount" style="color: #000000">*{{count($post->likes)}}</span>
-                            </a>
+                            @include('components.posts.like',['post_id'=>$post->id,'option'=>'post','count'=>count($post->likes)])
                         @else
-                            <a href="" class="goodBtn" data-post_id="{{$post->id}}" style="color: #000000; text-decoration:none">
-                                <i data-id={{$post->id}} class="fa-solid fa-fish fa-2x good_icon"></i>
-                                <span id="goodCount" style="color: #000000">*{{count($post->likes)}}</span>
-                            </a>
+                            @include('components.posts.unlike',['post_id'=>$post->id,'option'=>'post','count'=>count($post->likes)])
                         @endif
                     @endif
 

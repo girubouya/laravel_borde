@@ -4,14 +4,20 @@ window.addEventListener('load',function(){
     goodBtn.forEach(btn=>{
         btn.addEventListener('click',(e)=>{
             e.preventDefault();
-            const postId = btn.dataset.post_id;
+            const postId = btn.dataset.id;
+            const option = btn.dataset.option;
+
+            data = {
+                'option':option,
+            };
 
             //押されている場合
             if(btn.classList.contains('check')){
                 fetch(`/unlike/${postId}`,{
                     method:'POST',
-                    headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content}, // CSRFトークン対策
-
+                    headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Content-Type':'application/json'}, // CSRFトークン対策
+                    body: JSON.stringify(data),
                 })
                 .then(response=>response.json())
                 .then(res=>{
@@ -23,10 +29,13 @@ window.addEventListener('load',function(){
                     console.log(error);
                 });
             }else{
+
                 //urlにたいしてリクエストを送る
                 fetch(`/like/${postId}`,{
                     method:'POST',
-                    headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content}, // CSRFトークン対策
+                    headers:{'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type':'application/json'}, // CSRFトークン対策
+                    body: JSON.stringify(data),
                 })
                 .then(response=>response.json())
                 .then(res=>{
