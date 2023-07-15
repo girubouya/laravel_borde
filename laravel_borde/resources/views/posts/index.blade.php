@@ -34,28 +34,41 @@
             <h2 class="fw-bold text-center">投稿内容</h2>
         </div>
         <div class="col-3">
-            <form action="{{route('posts.search')}}" method="POST">
-                @csrf
+            {{-- 検索処理 --}}
+            <form action="/posts/search" method="GET">
                 <div class="input-group">
                     <input type="text" class="form-control" name="search" placeholder="キーワードを入力">
                     <button class="btn btn-outline-success" type="submit" id="searchBtn"><i class="fas fa-search"></i> 検索</button>
                 </div>
             </form>
         </div>
-        <div class="col-3">
-            {{$posts->links('pagination::bootstrap-5')}}
-        </div>
+        @if ($paginate === '')
+            <div class="col-3">
+                {{$posts->links('pagination::bootstrap-5')}}
+            </div>
+        @endif
+        @if ($paginate === 'name')
+            <div class="col-3">
+                {{$posts->appends(['name'=>$posts[0]->user_id])->links('pagination::bootstrap-5')}}
+            </div>
+        @endif
+        @if ($paginate === 'search')
+            <div class="col-3">
+                {{$posts->appends(['search'=>$keyword])->links('pagination::bootstrap-5')}}
+            </div>
+        @endif
     </div>
+
     {{-- 一覧表示 --}}
     @if (isset($posts))
         @foreach ($posts as $post)
             <div class="card mb-3">
                 <div class="card-body">
-                    <a href="{{route('posts.show',$post)}}" style="text-decoration: none">
-                        <h4 class="card-title">{{$post->title}}
-                            <span class="fs-6" style="color: #000000">by:{{$post->user->name}}</span>
-                        </h4>
-                    </a>
+                    <div class="d-flex">
+                        <a href="{{route('posts.show',$post)}}" style="text-decoration: none"><h4 class="card-title">{{$post->title}}</h4></a>
+                        <a href="{{route('posts.index',['name'=>$post->user_id])}}"><p class="fs-6 ms-3" style="color: #000000">by:{{$post->user->name}}</p></a>
+                    </div>
+
                     <p class="card-text">{{$post->content}}</p>
 
                     @if (isset($loginUser))

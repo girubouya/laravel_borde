@@ -30,8 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/posts/search',[PostController::class,'search'])->name('posts.search');
 Route::resource('/posts',PostController::class);
-Route::post('/posts/search',[PostController::class,'search'])->name('posts.search');
 
 Route::get('/comment',[CommentController::class,'index'])->name('comment.index');
 Route::post('/comment',[CommentController::class,'store'])->name('comment.store');

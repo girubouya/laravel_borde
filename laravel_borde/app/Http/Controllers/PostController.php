@@ -16,18 +16,27 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $loginUser = Auth::user();  //ログインしているユーザー
+        $paginate = '';
 
         if(empty(session('keyword'))){
-            $posts = Post::orderBy('id','desc')->paginate(4); //データを取ってくる
+            $posts = Post::orderBy('id','desc')->paginate(3); //データを取ってくる
+            if(isset($request->name)){
+                $posts = Post::where('user_id',$request->name)->paginate(3);
+                $paginate = 'name';
+            }
         }else{
             $keyword = session('keyword');
-            $posts = Post::where('title','LIKE',"%{$keyword}%")->get();
+            $posts = Post::where('title','LIKE',"%{$keyword}%")->paginate(3);
+            if(isset($request->name)){
+                $posts = Post::where('user_id',$request->name)->where('title','LIKE',"%{$keyword}%")->paginate(3);
+                $paginate = 'name';
+            }
         }
 
-        return view('posts.index',compact('posts','loginUser'));    //index.blade.phpを表示
+        return view('posts.index',compact('posts','loginUser','paginate'));    //index.blade.phpを表示
     }
 
     /**
@@ -116,13 +125,16 @@ class PostController extends Controller
         $keyword = $request->search;
         session(['keyword'=>$keyword]);
 
+        $paginate='search';
+
         if($keyword === null){
             //何も検索されていなかったらすべて取得
-            $posts = Post::all();
+            session()->forget('keyword');
+            $posts = Post::paginate(3);
             $message = '';
         }else{
             //検索された単語をDBから取得
-            $posts = Post::where('title','LIKE',"%{$keyword}%")->get();
+            $posts = Post::where('title','LIKE',"%{$keyword}%")->paginate(3);
             if(empty($posts)){
                 $message = '検索結果は0件です';
             }else{
@@ -132,6 +144,6 @@ class PostController extends Controller
         }
 
         $loginUser = Auth::user();
-        return view('posts.index',compact('posts','loginUser','message'));
+        return view('posts.index',compact('posts','loginUser','message','keyword','paginate'));
     }
 }
