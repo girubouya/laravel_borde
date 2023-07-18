@@ -56,9 +56,9 @@ class CommentController extends Controller
         return redirect('/posts/'.$request->post_id);
     }
 
-    public function delete(Request $request){
+    public function delete(Request $request , $comment_id){
         // 選択しているコメントIDを取得して削除
-        $comment = Comment::find($request->comment_id);
+        $comment = Comment::find($comment_id);
         $comment->delete();
         return redirect('/posts/'.$request->post_id);
     }

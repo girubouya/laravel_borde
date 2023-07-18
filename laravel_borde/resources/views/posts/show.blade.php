@@ -20,8 +20,7 @@
 
         @if (isset($loginUser))
             @if ($loginUser['id'] === $post->user_id)
-            @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post)])
-
+                @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post),'postId'=>''])
             @endif
         @endif
     </div>
@@ -35,40 +34,45 @@
 
 {{-- コメント一覧表示 --}}
 @if (isset($comments))
-@foreach ($comments as $comment)
-<div class="row">
-    <div class="col-10">
-        <div class="card mb-3">
-            <div class="card-body">
-                <p class="card-text fs-5">{{$comment->comment}} <span class="fs-6 text-purple-300">by:{{$comment->user->name}}</span></p>
-                @if (isset($loginUser))
-                    @if ($loginUser['id'] === $comment->user_id)
-                    {{-- @include('components.posts.editDelete',['routeEdit'=>route('comment.edit',['comment_id'=>$comment->id]),'routeDelete'=>route('comment.destroy',['comment_id'=>$comment->id])]) --}}
-                        <div class="d-flex">
-                            <a href="{{route('comment.edit',['comment_id'=>$comment->id])}}" class="btn border me-2">編集</a>
+<div class="p-3" style="height: 300px; overflow-y:scroll; overflow-x:hidden">
+    @foreach ($comments as $comment)
+        <div class="row">
+            {{-- userのコメントは右に表示 --}}
+            @if ($loginUser['name']===$comment->user->name)
+            <div class="offset-2">
+            @endif
+                <div class="col-10">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p class="card-text fs-5">{{$comment->comment}}
+                                <span class="fs-6 text-purple-300">by:{{$comment->user->name}}</span>
+                            </p>
+                            @if (isset($loginUser))
+                                @if ($loginUser['id'] === $comment->user_id)
+                                    @include('components.posts.editDelete',[
+                                        'routeEdit'=>route('comment.edit',['comment_id'=>$comment->id]),
+                                        'routeDelete'=>route('comment.destroy',$comment),
+                                        'postId'=>$post->id,
+                                        ])
+                                @endif
 
-                            <form action="{{route('comment.destroy')}}" method="POST">
-                                @csrf
-                                <input type="hidden" name="comment_id" value="{{$comment->id}}">
-                                <input type="hidden" name="post_id" value="{{$post->id}}">
-                                <button type="submit" class="btn border">削除</button>
-                            </form>
+                                {{-- 良いね処理 --}}
+                                @if ($loginUser->isLikeComment($comment->id))
+                                    @include('components.posts.like',['post_id'=>$comment->id,'option'=>'comment','count'=>count($comment->likes)])
+                                @else
+                                    @include('components.posts.unlike',['post_id'=>$comment->id,'option'=>'comment','count'=>count($comment->likes)])
+                                @endif
+
+                            @endif
                         </div>
-                    @endif
-
-                    {{-- 良いね処理 --}}
-                    @if ($loginUser->isLikeComment($comment->id))
-                        @include('components.posts.like',['post_id'=>$comment->id,'option'=>'comment','count'=>count($comment->likes)])
-                    @else
-                        @include('components.posts.unlike',['post_id'=>$comment->id,'option'=>'comment','count'=>count($comment->likes)])
-                    @endif
-
-                @endif
+                    </div>
+                </div>
+            @if ($loginUser['name']===$comment->user->name)
             </div>
+            @endif
         </div>
-    </div>
+    @endforeach
 </div>
-@endforeach
 @endif
 
 {{-- コメント投稿フォーム --}}

@@ -5,6 +5,7 @@
     <form action="{{$routeDelete}}" method="POST">
         @csrf
         @method('DELETE')
+        <input type="hidden" name="post_id" value="{{$postId ? $postId:''}}">
         <button type="submit" class="btn border">削除</button>
     </form>
 </div>

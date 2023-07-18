@@ -37,7 +37,7 @@ Route::get('/comment',[CommentController::class,'index'])->name('comment.index')
 Route::post('/comment',[CommentController::class,'store'])->name('comment.store');
 Route::get('/comment/edit',[CommentController::class,'edit'])->name('comment.edit');
 Route::post('/comment/edit',[CommentController::class,'update'])->name('comment.update');
-Route::post('/comment/delete',[CommentController::class,'delete'])->name('comment.destroy');
+Route::delete('/comment/delete/{id}',[CommentController::class,'delete'])->name('comment.destroy');
 
 Route::post('/like/{postId}',[LikeController::class,'store']);
 Route::post('/unlike/{postId}',[LikeController::class,'destory']);

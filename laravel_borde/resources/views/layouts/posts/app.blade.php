@@ -68,7 +68,6 @@
                 <a href="{{route('posts.index')}}">
                     <h1 class="fw-bold text-danger text-center">
                         掲示板サイト
-                        {{-- {{session()->forget('keyword')}} --}}
                     </h1>
                 </a>
                 @yield('content')

@@ -74,7 +74,7 @@
 
                     @if (isset($loginUser))
                         @if ($loginUser['id'] === $post->user_id)
-                            @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post)])
+                            @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post),'postId'=>''])
                         @endif
                         {{-- 良いね処理(true=押されている/false=押されていない --}}
                         @if ($loginUser->isLike($post->id))

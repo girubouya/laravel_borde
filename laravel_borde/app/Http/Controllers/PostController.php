@@ -155,7 +155,7 @@ class PostController extends Controller
             if(empty($posts)){
                 $message = '検索結果は0件です';
             }else{
-                $searchCount = count($posts);
+                $searchCount = Post::where('title','LIKE',"%{$keyword}%")->count();
                 $message = "検索結果は{$searchCount}件です";
             }
         }
