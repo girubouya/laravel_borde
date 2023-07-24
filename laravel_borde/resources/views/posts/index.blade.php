@@ -3,7 +3,6 @@
     <script src="{{asset('js/posts.js')}}"></script>
 @endsection
 
-
 @section('content')
 
     {{-- エラー表示 --}}
@@ -30,7 +29,7 @@
         {{$message}}
     @endif
     <div class="row align-items-center mb-5">
-        <div class="col-5">
+        <div class="col-3">
             <h2 class="fw-bold text-center">投稿内容</h2>
         </div>
         <div class="col-3">
@@ -42,6 +41,7 @@
                 </div>
             </form>
         </div>
+
         {{-- ページネーション --}}
         @if ($paginate === '')
             <div class="col-3">
@@ -58,6 +58,17 @@
                 {{$posts->appends(['search'=>$keyword])->links('pagination::bootstrap-5')}}
             </div>
         @endif
+
+        {{-- 並び替え --}}
+        <div class="col-3">
+            <form action="{{route('posts.index')}}" method="GET">
+                <select name="orderBy">
+                    <option value="desc">降順</option>
+                    <option value="asc">昇順</option>
+                </select>
+                <input type="submit" value="並び替え" class="btn btn-primary">
+            </form>
+        </div>
     </div>
 
     {{-- 投稿一覧表示 --}}
@@ -67,12 +78,15 @@
                 <div class="card-body">
                     <div class="d-flex">
                         <a href="{{route('posts.show',$post)}}" style="text-decoration: none"><h4 class="card-title">{{$post->title}}</h4></a>
-                        <a href="{{route('posts.index',['name'=>$post->user_id])}}"><p class="fs-6 ms-3" style="color: #000000">by:{{$post->user->name}}</p></a>
+                        <a href="{{route('posts.index',['name'=>$post->user_id])}}">
+                            <p class="fs-6 ms-3" style="color: #000000">by:{{$post->user->name}}</p>
+                            <?php session('name',$post->user_id); ?>
+                        </a>
                     </div>
 
                     <p class="card-text">{{$post->content}}</p>
 
-                    @if (isset($loginUser))
+                    @if (Auth::check())
                         @if ($loginUser['id'] === $post->user_id)
                             @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post),'postId'=>''])
                         @endif
@@ -83,6 +97,13 @@
                             @include('components.posts.unlike',['post_id'=>$post->id,'option'=>'post','count'=>count($post->likes)])
                         @endif
                     @endif
+
+                    @guest
+                    <div class=" text-end">
+                        <i class="fa-solid fa-fish fa-2x good_icon"></i>
+                        <span id="goodCount" style="color: #000000">*{{count($post->likes)}}</span>
+                    </div>
+                    @endguest
 
                 </div>
             </div>

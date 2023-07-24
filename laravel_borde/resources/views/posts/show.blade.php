@@ -18,18 +18,28 @@
         </h4>
         <p class="card-text">{{$post->content}}</p>
 
-        @if (isset($loginUser))
+        @if (Auth::check())
             @if ($loginUser['id'] === $post->user_id)
                 @include('components.posts.editDelete',['routeEdit'=>route('posts.edit',$post),'routeDelete'=>route('posts.destroy',$post),'postId'=>''])
             @endif
+
+            {{-- 良いね処理(true=押されている/false=押されていない --}}
+            @if ($loginUser->isLike($post->id))
+                @include('components.posts.like',['post_id'=>$post->id,'option'=>'post','count'=>$goodCount])
+            @else
+                @include('components.posts.unlike',['post_id'=>$post->id,'option'=>'post','count'=>$goodCount])
+            @endif
         @endif
+
+        @guest
+        <div class=" text-end">
+            <i class="fa-solid fa-fish fa-2x good_icon"></i>
+            <span id="goodCount" style="color: #000000">*{{count($post->likes)}}</span>
+        </div>
+        @endguest
+
     </div>
-    {{-- 良いね処理(true=押されている/false=押されていない --}}
-    @if ($goodCheck)
-        @include('components.posts.like',['post_id'=>$post->id,'option'=>'post','count'=>$goodCount])
-    @else
-        @include('components.posts.unlike',['post_id'=>$post->id,'option'=>'post','count'=>$goodCount])
-    @endif
+
 </div>
 
 {{-- コメント一覧表示 --}}
@@ -38,16 +48,17 @@
     @foreach ($comments as $comment)
         <div class="row">
             {{-- userのコメントは右に表示 --}}
-            @if ($loginUser['name']===$comment->user->name)
+            @if (Auth::check() && $loginUser['name']===$comment->user->name)
             <div class="offset-2">
             @endif
+
                 <div class="col-10">
                     <div class="card mb-3">
                         <div class="card-body">
                             <p class="card-text fs-5">{{$comment->comment}}
                                 <span class="fs-6 text-purple-300">by:{{$comment->user->name}}</span>
                             </p>
-                            @if (isset($loginUser))
+                            @if (Auth::check())
                                 @if ($loginUser['id'] === $comment->user_id)
                                     @include('components.posts.editDelete',[
                                         'routeEdit'=>route('comment.edit',['comment_id'=>$comment->id]),
@@ -55,7 +66,6 @@
                                         'postId'=>$post->id,
                                         ])
                                 @endif
-
                                 {{-- 良いね処理 --}}
                                 @if ($loginUser->isLikeComment($comment->id))
                                     @include('components.posts.like',['post_id'=>$comment->id,'option'=>'comment','count'=>count($comment->likes)])
@@ -64,12 +74,22 @@
                                 @endif
 
                             @endif
+
+                            @guest
+                                <div class=" text-end">
+                                    <i class="fa-solid fa-fish fa-2x good_icon"></i>
+                                    <span id="goodCount" style="color: #000000">*{{count($post->likes)}}</span>
+                                </div>
+                            @endguest
+
                         </div>
                     </div>
                 </div>
-            @if ($loginUser['name']===$comment->user->name)
+
+            @if (Auth::check() && $loginUser['name']===$comment->user->name)
             </div>
             @endif
+
         </div>
     @endforeach
 </div>

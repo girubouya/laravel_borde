@@ -18,12 +18,19 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
+
         $loginUser = Auth::user();  //ログインしているユーザー
         $paginate = ''; //何を基準でページネーションするかの変数
 
         //検索キーワードが無ければ全てのデータ取得
         if(empty(session('keyword'))){
-            $posts = Post::orderBy('id','desc')->paginate(3); //データを取ってくる
+            //降順/昇順
+            if($request->orderBy === 'desc'){
+                $posts = Post::orderBy('id','desc')->paginate(3); //データを取ってくる
+            }else{
+                $posts = Post::orderBy('id','asc')->paginate(3); //データを取ってくる
+            }
+
             //名前で検索する
             if(isset($request->name)){
                 $posts = Post::where('user_id',$request->name)->paginate(3);
@@ -31,14 +38,19 @@ class PostController extends Controller
             }
         }else{
             $keyword = session('keyword');
-            $posts = Post::where('title','LIKE',"%{$keyword}%")->paginate(3);
+            //降順/昇順
+            if($request->orderBy === 'desc'){
+                $posts = Post::where('title','LIKE',"%{$keyword}%")->orderBy('id','desc')->paginate(3);
+            }else{
+                $posts = Post::where('title','LIKE',"%{$keyword}%")->orderBy('id','asc')->paginate(3);
+            }
+
             //検索キーワードがありかつ、名前で検索したデータ取得
             if(isset($request->name)){
                 $posts = Post::where('user_id',$request->name)->where('title','LIKE',"%{$keyword}%")->paginate(3);
                 $paginate = 'name';
             }
         }
-
         return view('posts.index',compact('posts','loginUser','paginate'));    //index.blade.phpを表示
     }
 
@@ -89,12 +101,10 @@ class PostController extends Controller
         //user情報取得
         $loginUser = Auth::user();
 
-        //ログインユーザーが選択されている投稿に良いねしたか調べる
-        $goodCheck = $loginUser->isLike($post->id);
         //良いねしている総数を取得
         $goodCount = Like::where('post_id',$post->id)->count();
 
-        return view('posts.show',compact('post','loginUser','comments','goodCheck','goodCount'));
+        return view('posts.show',compact('post','loginUser','comments','goodCount'));
     }
 
     /**
@@ -134,6 +144,7 @@ class PostController extends Controller
 
     //検索処理
     public function search(Request $request){
+
         //検索キーワード取得
         $keyword = $request->search;
         // セッションに保存
@@ -145,18 +156,26 @@ class PostController extends Controller
         if($keyword === null){
             //セッション削除
             session()->forget('keyword');
+            session()->forget('name');
             // 全てのデータ取得
             $posts = Post::paginate(3);
             $message = '';
         }else{
-            //検索された単語をDBから取得
-            $posts = Post::where('title','LIKE',"%{$keyword}%")->paginate(3);
-            // もしDBにデータが無かったら０/あれば件数取得
-            if(empty($posts)){
-                $message = '検索結果は0件です';
+            //もし名前検索を先にしていた場合
+            if(!empty(session('name'))){
+                $posts = Post::where('user_id',session('name'))->where('title','LIKE',"%{$keyword}%")->paginate(3);
+                $searchCount =Post::where('user_id',session('name'))->where('title','LIKE',"%{$keyword}%")->count();
+                $message= "検索結果は{$searchCount}件です";
             }else{
-                $searchCount = Post::where('title','LIKE',"%{$keyword}%")->count();
-                $message = "検索結果は{$searchCount}件です";
+                //検索された単語をDBから取得
+                $posts = Post::where('title','LIKE',"%{$keyword}%")->paginate(3);
+                // もしDBにデータが無かったら０/あれば件数取得
+                if(empty($posts)){
+                    $message = '検索結果は0件です';
+                }else{
+                    $searchCount = Post::where('title','LIKE',"%{$keyword}%")->count();
+                    $message = "検索結果は{$searchCount}件です";
+                }
             }
         }
 
